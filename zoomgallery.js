@@ -1,3 +1,25 @@
+/*
+Copyright (C) 2012 de Flotte Maxence
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
+/*
+ * @version 0.2
+ */
+
 $.fn.zoomgallery = function(options) {
 	// Defaults vars
 	var defaults = {
@@ -73,26 +95,28 @@ $.fn.zoomgallery = function(options) {
 		if (!$(win).is(':visible')) {
 			return;
 		}
+		var windowHeight = Math.min($(window).height(), document.body.clientHeight);
+		var windowWidth =Math.min($(window).width(), document.body.clientWidth);
 		var wMarge = $(win).outerWidth(true) - $(win).outerWidth();
 		var hMarge = $(win).outerHeight(true) - $(win).outerHeight();
-		var wRate = ($(win).find('img').get(0).naturalWidth + wMarge) / document.body.clientWidth;
-		var hRate = ($(win).find('img').get(0).naturalHeight + hMarge) / document.body.clientHeight;
+		var wRate = ($(win).find('img').get(0).naturalWidth + wMarge) / windowWidth;
+		var hRate = ($(win).find('img').get(0).naturalHeight + hMarge) / windowHeight;
 console.log($(win).find('img').get(0).naturalHeight);
-console.log(hRate, wRate, document.body.clientHeight);
+console.log(hRate, wRate, windowHeight);
 
 		if (wRate > 1 || hRate > 1) {
 			if (wRate > hRate) {
 				$(win).css({
-					width: document.body.clientWidth - wMarge + 'px',
+					width: windowWidth - wMarge + 'px',
 					height: ($(win).find('img').get(0).naturalHeight + hMarge) / wRate - hMarge + 'px',
-					top: (document.body.clientHeight - $(win).find('img').get(0).naturalHeight / wRate) / 2 - hMarge / 2 + $(document).scrollTop() + 'px',
+					top: (windowHeight - $(win).find('img').get(0).naturalHeight / wRate) / 2 - hMarge / 2 + $(document).scrollTop() + 'px',
 					left: $(document).scrollLeft()
 				});
 			} else {
 				$(win).css({
-					height: document.body.clientHeight - hMarge + 'px',
+					height: windowHeight - hMarge + 'px',
 					width: ($(win).find('img').get(0).naturalWidth + wMarge) / hRate - wMarge + 'px',
-					left: (document.body.clientWidth - $(win).find('img').get(0).naturalWidth / hRate) / 2 - wMarge / 2 + $(document).scrollLeft() + 'px',
+					left: (windowWidth - $(win).find('img').get(0).naturalWidth / hRate) / 2 - wMarge / 2 + $(document).scrollLeft() + 'px',
 					top: $(document).scrollTop()
 				});
 			}
@@ -100,8 +124,8 @@ console.log(hRate, wRate, document.body.clientHeight);
 			$(win).css({
 				height: $(win).find('img').get(0).naturalHeight + 'px',
 				width: $(win).find('img').get(0).naturalWidth + 'px',
-				top: (document.body.clientHeight - $(win).find('img').get(0).naturalHeight) / 2 + 'px',
-				left: (document.body.clientWidth - $(win).find('img').get(0).naturalWidth) / 2 + 'px'
+				top: (windowHeight - $(win).find('img').get(0).naturalHeight) / 2 + 'px',
+				left: (windowWidth - $(win).find('img').get(0).naturalWidth) / 2 + 'px'
 			});
 		}
 	}
@@ -147,8 +171,8 @@ console.log(hRate, wRate, document.body.clientHeight);
 		win.removeClass('expended');
 		win.addClass('reset');
 		win.css({
-			top: elm.position().top - hMarge / 2 + minHMarge / 2,
-			left: elm.position().left - wMarge / 2 + minWMarge / 2,
+			top: elm.offset().top - $('body').offset().top - hMarge / 2 + minHMarge / 2,
+			left: elm.offset().left - $('body').offset().left - wMarge / 2 + minWMarge / 2,
 			width: elm.width(),
 			height: elm.height(),
 			zIndex: 1
@@ -170,8 +194,8 @@ console.log(hRate, wRate, document.body.clientHeight);
 		var minWMarge = $(elm).outerWidth(true) - $(elm).outerWidth();
 		var minHMarge = $(elm).outerHeight(true) - $(elm).outerHeight();
 		win.css({
-			top: elm.position().top - hMarge / 2 + minHMarge / 2,
-			left: elm.position().left - wMarge / 2 + minWMarge / 2,
+			top: elm.offset().top - $('body').offset().top - hMarge / 2 + minHMarge / 2,
+			left: elm.offset().left - $('body').offset().left - wMarge / 2 + minWMarge / 2,
 			width: elm.width(),
 			height: elm.height(),
 			zIndex: 0
