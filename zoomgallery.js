@@ -101,8 +101,6 @@ $.fn.zoomgallery = function(options) {
 		var hMarge = $(win).outerHeight(true) - $(win).outerHeight();
 		var wRate = ($(win).find('img').get(0).naturalWidth + wMarge) / windowWidth;
 		var hRate = ($(win).find('img').get(0).naturalHeight + hMarge) / windowHeight;
-console.log($(win).find('img').get(0).naturalHeight);
-console.log(hRate, wRate, windowHeight);
 
 		if (wRate > 1 || hRate > 1) {
 			if (wRate > hRate) {
@@ -124,8 +122,8 @@ console.log(hRate, wRate, windowHeight);
 			$(win).css({
 				height: $(win).find('img').get(0).naturalHeight + 'px',
 				width: $(win).find('img').get(0).naturalWidth + 'px',
-				top: (windowHeight - $(win).find('img').get(0).naturalHeight) / 2 + 'px',
-				left: (windowWidth - $(win).find('img').get(0).naturalWidth) / 2 + 'px'
+				top: (windowHeight - $(win).find('img').get(0).naturalHeight) / 2 + $(document).scrollTop() + 'px',
+				left: (windowWidth - $(win).find('img').get(0).naturalWidth) / 2 + $(document).scrollLeft() + 'px'
 			});
 		}
 	}
@@ -165,14 +163,22 @@ console.log(hRate, wRate, windowHeight);
 		
 		var minWMarge = $(elm).outerWidth(true) - $(elm).outerWidth();
 		var minHMarge = $(elm).outerHeight(true) - $(elm).outerHeight();
+		
+		var bodyWMarge = $('body').outerWidth(true) - $('body').outerWidth();
+		var bodyHMarge = $('body').outerHeight(true) - $('body').outerHeight();
 		currentImg = elm.attr('zoomId');
 		
-		win.css3('transition-duration', '0');
+		if ($('body').css('position') != 'static') {
+			bodyWMarge = 0;
+			bodyHMarge = 0;
+		}
+		
+		win.css3('transition-duration', '0s');
 		win.removeClass('expended');
 		win.addClass('reset');
 		win.css({
-			top: elm.offset().top - $('body').offset().top - hMarge / 2 + minHMarge / 2,
-			left: elm.offset().left - $('body').offset().left - wMarge / 2 + minWMarge / 2,
+			left: elm.offset().left - wMarge / 2 - $('body').offset().left + bodyWMarge / 2,
+			top: elm.offset().top - hMarge / 2 - $('body').offset().top + bodyHMarge / 2,
 			width: elm.width(),
 			height: elm.height(),
 			zIndex: 1
@@ -191,15 +197,25 @@ console.log(hRate, wRate, windowHeight);
 		var win = $('#' + opts.windowClassName + elm.attr('zoomId'));
 		var wMarge = $(win).outerWidth(true) - $(win).outerWidth();
 		var hMarge = $(win).outerHeight(true) - $(win).outerHeight();
+		
 		var minWMarge = $(elm).outerWidth(true) - $(elm).outerWidth();
 		var minHMarge = $(elm).outerHeight(true) - $(elm).outerHeight();
+		
+		var bodyWMarge = $('body').outerWidth(true) - $('body').outerWidth();
+		var bodyHMarge = $('body').outerHeight(true) - $('body').outerHeight();
+		
+		if ($('body').css('position') != 'static') {
+			bodyWMarge = 0;
+			bodyHMarge = 0;
+		}
 		win.css({
-			top: elm.offset().top - $('body').offset().top - hMarge / 2 + minHMarge / 2,
-			left: elm.offset().left - $('body').offset().left - wMarge / 2 + minWMarge / 2,
+			left: elm.offset().left - wMarge / 2 - $('body').offset().left + bodyWMarge / 2,
+			top: elm.offset().top - hMarge / 2 - $('body').offset().top + bodyHMarge / 2,
 			width: elm.width(),
 			height: elm.height(),
 			zIndex: 0
 		});
+		
 		win.addClass('reset');
 		win.removeClass('expended');
 		setTimeout(function() {
