@@ -1,0 +1,15 @@
+body {
+	background: #333;
+}
+h1 {
+	width: 100%;
+	text-align: center;
+	margin: 30px 0;
+}
+p {
+	width: 100%;
+	text-align: center;
+}
+a {
+	color: black;
+}
