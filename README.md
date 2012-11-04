@@ -33,7 +33,7 @@ Here is the minimal html code to use ZoomGallery
 
 Options
 ------------
-ZoomGaller allow this next options
+ZoomGaller allow these next options
  - navbar (boolean(true)): Display navigation bar
  - titlebar (boolean(true)): Display title bar
  - galleryMod (boolean(true)): Enable gallery mod
