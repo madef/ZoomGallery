@@ -1,6 +1,7 @@
 ZoomGallery Documentation
 =========
-ZoomGallery is a small and easy to use JS library to make responsive images gallerie.  
+ZoomGallery is a small and easy to use JS library to make responsive images galleries.
+The demo is available here: http://zoomgallery.deflotte.fr/
 
 Requirement
 ------------
