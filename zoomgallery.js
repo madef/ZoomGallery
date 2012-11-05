@@ -29,6 +29,8 @@ $.fn.zoomgallery = function(options) {
 		infinite: true,
 		windowClassName: 'zoomWindow',
 		animationDuration: 0.6,
+		swipeEvent: true,
+		mobileZoom: {height: 800, width: 600}
 	};
 	// Extend our default options with those provided.
 	var opts = $.extend(defaults, options);
@@ -37,6 +39,7 @@ $.fn.zoomgallery = function(options) {
 	var gallery = $(this);
 	
 	var zoomId = 0;
+	// Add windows
 	$(this).each(function() {
 		// Set a zoomId
 		$(this).attr('zoomId', zoomId);
@@ -83,6 +86,44 @@ $.fn.zoomgallery = function(options) {
 		}
 		
 		$('body').append(win);
+		
+		// Adding swipe event
+		if (opts.swipeEvent && opts.galleryMod) {
+			win.find('img').css3('user-select', 'none');
+			win.find('img').css3('user-drag', 'none');
+			win
+				.hammer({
+					drag_vertical: false,
+					drag_min_distance: $(window).width() / 10
+				})
+ 				.on('drag', function(ev) {
+					console.log(this.dragged);
+					if (this.dragged) {
+						return false
+					}
+					this.dragged = true;
+					var it = this;
+					
+					setTimeout(function() {
+						it.dragged = false;
+					}, opts.animationDuration * 1000);
+					
+					if ((ev.angle < 90 ||ev.angle > 270) && ev.angle > 0 || (ev.angle > -90 ||ev.angle < -270) && ev.angle < 0) {
+						next();
+					} else {
+						prev();
+					}
+					console.log(ev);
+					return false;
+				})
+ 				.on('swipe', function(ev) {
+					if ((ev.angle < 90 ||ev.angle > 270) && ev.angle > 0 || (ev.angle > -90 ||ev.angle < -270) && ev.angle < 0) {
+						next();
+					} else {
+						prev();
+					}
+				});
+		}
 		
 		if (opts.navbar) {
 		}

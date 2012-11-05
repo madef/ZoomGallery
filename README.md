@@ -6,6 +6,7 @@ The demo is available here: http://zoomgallery.deflotte.fr/
 Requirement
 ------------
 ZoomGallery require jQuery 1.8.2
+To eneable swipe event, hammer.js 0.6.2 is required
 
 Get Started
 ------------
@@ -41,11 +42,13 @@ ZoomGaller allow these next options
  - infinite (boolean(true)): Images can be scrolled to infinity
  - windowClassName (string('zoomWindow')): Class used for the window
  - animationDuration (float(0.6)): Animation duration in second
+ - swipeEvent (boolean(true)): Allow swipe event to run gallery. This feature require hammer.js (http://eightmedia.github.com/hammer.js/).
+ - mobileZoom (array({height: 800, width: 600}): Allow a specific zoom for small device. To disable this feature, set  this attribute to boolean(false).
 
 Version
 -
 
-0.1
+0.3
 
 
 License
