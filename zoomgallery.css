@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 /*
- * @version 0.2
+ * @version 0.4
  */
 
 .zoomgallery {
@@ -37,6 +37,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	margin: 10px;
 	border-radius: 5px;
 	box-shadow: 4px 4px 20px black;
+}
+.zoomWindow.mobilezoom {
+	border-radius: 0 !important;
+	margin: 0 !important;
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	bottom: 0 !important;
+	overflow: hidden !important;
+	width: 100% !important;
+	height: 100% !important;
+}
+.zoomWindow.mobilezoom img {
+	position: absolute;
+}
+.zoomWindow.mobilezoom .navbar, .zoomWindow.mobilezoom .titlebar {
+	border-radius: 0;
+	position: fixed;
+	left: 0;
+	right: 0;
 }
 .zoomWindow img {
 	border-radius: 5px;

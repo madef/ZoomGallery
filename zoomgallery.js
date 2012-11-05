@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 /*
- * @version 0.2
+ * @version 0.4
  */
 
 $.fn.zoomgallery = function(options) {
@@ -30,7 +30,7 @@ $.fn.zoomgallery = function(options) {
 		windowClassName: 'zoomWindow',
 		animationDuration: 0.6,
 		swipeEvent: true,
-		mobileZoom: {height: 800, width: 600}
+		mobileZoom: {height: 400, width: 500}
 	};
 	// Extend our default options with those provided.
 	var opts = $.extend(defaults, options);
@@ -61,7 +61,13 @@ $.fn.zoomgallery = function(options) {
 			.append($('<img />')
 				.css('width', '100%')
 				.css('height', '100%')
-				.click(function() { hideWindow(img); })
+				.click(function() {
+					if ($(this).parent().get(0).dragging) {
+						return false;
+					}
+					hideWindow(img);
+					return false;
+				})
 			);
 		
 		if (opts.navbar) {
@@ -93,30 +99,67 @@ $.fn.zoomgallery = function(options) {
 			win.find('img').css3('user-drag', 'none');
 			win
 				.hammer({
-					drag_vertical: false,
-					drag_min_distance: $(window).width() / 10
+				})
+ 				.on('dragstart', function(ev) {
+					// Mobile Zoom, dragging = scrolling image
+					if ('dragstart', this.mobileZoom) {
+						this.position = win.find('img').position();
+					} else { // dragging = changing image
+						if ((ev.angle < 90 ||ev.angle > 270) && ev.angle > 0 || (ev.angle > -90 ||ev.angle < -270) && ev.angle < 0) {
+							next();
+						} else {
+							prev();
+						}
+						return false;
+					}
 				})
  				.on('drag', function(ev) {
-					console.log(this.dragged);
-					if (this.dragged) {
-						return false
+					if (this.dragging) {
+						return false;
 					}
-					this.dragged = true;
+					var position = this.position;
+					
+					if (this.mobileZoom) {
+						var top = position.top + ev.distanceY;
+						var left = position.left + ev.distanceX;
+						if (top > 0) {
+							top = 0;
+						} else if (top < - $(this).find('img').height() + $(this).height()) {
+							top = - $(this).find('img').height() + $(this).height();
+						}
+						
+						if (left > 0) {
+							if (opts.galleryMod && (left + $(this).find('img').width() - $(this).width()) /  $(this).find('img').width() > 0.2) {
+								this.dragging = true;
+								prev();
+							}
+							left = 0;
+						} else if (left < - $(this).find('img').width() + $(this).width()) {
+							if (opts.galleryMod && (left + $(this).find('img').width() - $(this).width()) /  $(this).find('img').width() < -0.2) {
+								this.dragging = true;
+								next();
+							}
+							left = - $(this).find('img').width() + $(this).width();
+						}
+						
+						$(this).find('img').css({
+							top: top,
+							left: left
+						});
+					}
+					return false;
+				})
+ 				.on('dragend', function(ev) {
 					var it = this;
-					
 					setTimeout(function() {
-						it.dragged = false;
-					}, opts.animationDuration * 1000);
-					
-					if ((ev.angle < 90 ||ev.angle > 270) && ev.angle > 0 || (ev.angle > -90 ||ev.angle < -270) && ev.angle < 0) {
-						next();
-					} else {
-						prev();
-					}
-					console.log(ev);
+						it.dragging = false;
+					}, 100);
 					return false;
 				})
  				.on('swipe', function(ev) {
+					if (win.get(0).mobileZoom) {
+						return false;
+					}
 					if ((ev.angle < 90 ||ev.angle > 270) && ev.angle > 0 || (ev.angle > -90 ||ev.angle < -270) && ev.angle < 0) {
 						next();
 					} else {
@@ -136,36 +179,102 @@ $.fn.zoomgallery = function(options) {
 		if (!$(win).is(':visible')) {
 			return;
 		}
+		
 		var windowHeight = Math.min($(window).height(), document.body.clientHeight);
 		var windowWidth =Math.min($(window).width(), document.body.clientWidth);
+		
 		var wMarge = $(win).outerWidth(true) - $(win).outerWidth();
 		var hMarge = $(win).outerHeight(true) - $(win).outerHeight();
+		
 		var wRate = ($(win).find('img').get(0).naturalWidth + wMarge) / windowWidth;
 		var hRate = ($(win).find('img').get(0).naturalHeight + hMarge) / windowHeight;
-
-		if (wRate > 1 || hRate > 1) {
-			if (wRate > hRate) {
-				$(win).css({
-					width: windowWidth - wMarge + 'px',
-					height: ($(win).find('img').get(0).naturalHeight + hMarge) / wRate - hMarge + 'px',
-					top: (windowHeight - $(win).find('img').get(0).naturalHeight / wRate) / 2 - hMarge / 2 + $(document).scrollTop() + 'px',
-					left: $(document).scrollLeft()
-				});
+		
+		// The devise is a mobile (or have a small resolution)? Use specific zoom
+		if (opts.mobileZoom !== false
+			&& opts.mobileZoom.height
+			&& opts.mobileZoom.width
+			&& (
+				windowHeight < opts.mobileZoom.height
+				|| windowHeight < opts.mobileZoom.width
+		)) {
+			if (wRate > 1 || hRate > 1) {
+				win.mobileZoom = true;
+				win.dragging = false;
+				$(win).addClass('mobilezoom');
+				if (wRate > hRate) {
+					var width = ($(win).find('img').get(0).naturalWidth + wMarge) / hRate;
+					var left = - (width - windowWidth) / 2;
+					$(win).find('img').css({
+						height: windowHeight + 'px',
+						width: width + 'px',
+						left: left,
+						top: 0
+					});
+				} else {
+					$(win).addClass('mobilezoom');
+					var height = ($(win).find('img').get(0).naturalHeight) / wRate - hMarge;
+					var top = - (height - windowHeight) / 2;
+					$(win).find('img').css({
+						height: height + 'px',
+						width: windowWidth + 'px',
+						left: 0,
+						top: top
+					});
+				}
 			} else {
+				win.mobileZoom = false;
+				$(win).removeClass('mobilezoom');
+				
+				$(win).find('img').css({
+					height: '100%',
+					width: '100%',
+					top: '0',
+					left: '0'
+				});
+			
 				$(win).css({
-					height: windowHeight - hMarge + 'px',
-					width: ($(win).find('img').get(0).naturalWidth + wMarge) / hRate - wMarge + 'px',
-					left: (windowWidth - $(win).find('img').get(0).naturalWidth / hRate) / 2 - wMarge / 2 + $(document).scrollLeft() + 'px',
-					top: $(document).scrollTop()
+					height: $(win).find('img').get(0).naturalHeight + 'px',
+					width: $(win).find('img').get(0).naturalWidth + 'px',
+					top: (windowHeight - $(win).find('img').get(0).naturalHeight) / 2 + $(document).scrollTop() + 'px',
+					left: (windowWidth - $(win).find('img').get(0).naturalWidth) / 2 + $(document).scrollLeft() + 'px'
 				});
 			}
 		} else {
-			$(win).css({
-				height: $(win).find('img').get(0).naturalHeight + 'px',
-				width: $(win).find('img').get(0).naturalWidth + 'px',
-				top: (windowHeight - $(win).find('img').get(0).naturalHeight) / 2 + $(document).scrollTop() + 'px',
-				left: (windowWidth - $(win).find('img').get(0).naturalWidth) / 2 + $(document).scrollLeft() + 'px'
+			win.mobileZoom = false;
+			$(win).removeClass('mobilezoom');
+			
+			$(win).find('img').css({
+				height: '100%',
+				width: '100%',
+				top: '0',
+				left: '0'
 			});
+			
+			win.mobileZoom = false;
+			if (wRate > 1 || hRate > 1) {
+				if (wRate > hRate) {
+					$(win).css({
+						width: windowWidth - wMarge + 'px',
+						height: ($(win).find('img').get(0).naturalHeight + hMarge) / wRate - hMarge + 'px',
+						top: (windowHeight - $(win).find('img').get(0).naturalHeight / wRate) / 2 - hMarge / 2 + $(document).scrollTop() + 'px',
+						left: $(document).scrollLeft()
+					});
+				} else {
+					$(win).css({
+						height: windowHeight - hMarge + 'px',
+						width: ($(win).find('img').get(0).naturalWidth + wMarge) / hRate - wMarge + 'px',
+						left: (windowWidth - $(win).find('img').get(0).naturalWidth / hRate) / 2 - wMarge / 2 + $(document).scrollLeft() + 'px',
+						top: $(document).scrollTop()
+					});
+				}
+			} else {
+				$(win).css({
+					height: $(win).find('img').get(0).naturalHeight + 'px',
+					width: $(win).find('img').get(0).naturalWidth + 'px',
+					top: (windowHeight - $(win).find('img').get(0).naturalHeight) / 2 + $(document).scrollTop() + 'px',
+					left: (windowWidth - $(win).find('img').get(0).naturalWidth) / 2 + $(document).scrollLeft() + 'px'
+				});
+			}
 		}
 	}
 	

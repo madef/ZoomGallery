@@ -48,7 +48,7 @@ ZoomGaller allow these next options
 Version
 -
 
-0.3
+0.4
 
 
 License
