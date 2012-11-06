@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 /*
- * @version 0.4
+ * @version 0.5
  */
 
 .zoomgallery {
@@ -38,6 +38,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	border-radius: 5px;
 	box-shadow: 4px 4px 20px black;
 }
+.mobilezoom .limiter {
+	display: none;
+	cursor: url(./zoomin.cur), default;
+}
 .zoomWindow.mobilezoom {
 	border-radius: 0 !important;
 	margin: 0 !important;
@@ -52,6 +56,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 }
 .zoomWindow.mobilezoom img {
 	position: absolute;
+}
+
+.zoomWindow.mobilezoom .limiter {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	box-shadow: -26px 0px 57px #3093b7;
+	border-color: #3093b7; /* The border color is used to defined box-shadow color */
+	top: 0;
+	display: block;
 }
 .zoomWindow.mobilezoom .navbar, .zoomWindow.mobilezoom .titlebar {
 	border-radius: 0;

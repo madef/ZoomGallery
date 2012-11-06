@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 /*
- * @version 0.4
+ * @version 0.5
  */
 
 $.fn.zoomgallery = function(options) {
@@ -28,9 +28,15 @@ $.fn.zoomgallery = function(options) {
 		galleryMod: true,
 		infinite: true,
 		windowClassName: 'zoomWindow',
+		limiterClassName: 'limiter',
+		navbarClassName: 'navbar',
+		titleClassName: 'titlebar',
+		previousButtonClassName: 'prev',
+		nextButtonClassName: 'next',
+		mobileZoomClassName: 'mobilezoom',
 		animationDuration: 0.6,
 		swipeEvent: true,
-		mobileZoom: {height: 400, width: 500}
+		mobileZoom: {height: 500, width: 500}
 	};
 	// Extend our default options with those provided.
 	var opts = $.extend(defaults, options);
@@ -68,17 +74,22 @@ $.fn.zoomgallery = function(options) {
 					hideWindow(img);
 					return false;
 				})
+			)
+			.append(
+				$('<div class="' + opts.limiterClassName + '"></div>')
+					.css3('user-select', 'none')
+					.css3('user-drag', 'none')
 			);
 		
 		if (opts.navbar) {
 			win.append(
-				$('<div class="navbar"></div>')
+				$('<div class="' + opts.navbarClassName + '"></div>')
 					.append(
-						$('<div class="prev"></div>')
+						$('<div class="' + opts.previousButtonClassName + '"></div>')
 							.click(function() { prev(); })
 					 )
 					.append(
-						$('<div class="next"></div>')
+						$('<div class="' + opts.nextButtonClassName + '"></div>')
 							.click(function() { next(); })
 					 )
 					
@@ -86,7 +97,7 @@ $.fn.zoomgallery = function(options) {
 		}
 		if (opts.titlebar) {
 			win.append(
-				$('<div class="titlebar"></div>')
+				$('<div class="' + opts.titlebarClassName + '"></div>')
 					.html(img.find('img').attr('title'))
 			);
 		}
@@ -114,7 +125,8 @@ $.fn.zoomgallery = function(options) {
 					}
 				})
  				.on('drag', function(ev) {
-					if (this.dragging) {
+					this.dragging = true;
+					if (this.dragStarted) {
 						return false;
 					}
 					var position = this.position;
@@ -129,15 +141,30 @@ $.fn.zoomgallery = function(options) {
 						}
 						
 						if (left > 0) {
-							if (opts.galleryMod && (left + $(this).find('img').width() - $(this).width()) /  $(this).find('img').width() > 0.2) {
-								this.dragging = true;
-								prev();
+							if (opts.galleryMod) {
+								if ((left) /  $(this).find('img').width() > 0.2) {
+									this.dragStarted = true;
+									prev();
+								}
+								$(this).find('.' + opts.limiterClassName).css({
+									boxShadow: (left / 6) + 'px 0 57px ' + $(this).find('.' + opts.limiterClassName).css('border-color'),
+									left: 'auto',
+									right: '100%'
+								});
 							}
 							left = 0;
 						} else if (left < - $(this).find('img').width() + $(this).width()) {
-							if (opts.galleryMod && (left + $(this).find('img').width() - $(this).width()) /  $(this).find('img').width() < -0.2) {
-								this.dragging = true;
-								next();
+							if (opts.galleryMod) {
+								if ((left + $(this).find('img').width() - $(this).width()) /  $(this).find('img').width() < -0.2) {
+									this.dragStarted = true;
+									next();
+								}
+								$(this).find('.' + opts.limiterClassName).css({
+									boxShadow: (left + $(this).find('img').width() - $(this).width()) / 6 + 'px 0 57px ' + $(this).find('.' + opts.limiterClassName).css('border-color'),
+									left: '100%',
+									right: 'auto'
+								});
+								left = $(this).find('img').width() - $(this).width() + (left + $(this).find('img').width() - $(this).width()) / 6;
 							}
 							left = - $(this).find('img').width() + $(this).width();
 						}
@@ -151,8 +178,13 @@ $.fn.zoomgallery = function(options) {
 				})
  				.on('dragend', function(ev) {
 					var it = this;
+					$(this).find('.' + opts.limiterClassName).css({
+						boxShadow: '0 0 0 ' + $(this).find('.' + opts.limiterClassName).css('border-color'),
+						left: '100%'
+					});
 					setTimeout(function() {
 						it.dragging = false;
+						it.dragStarted = false;
 					}, 100);
 					return false;
 				})
@@ -166,9 +198,6 @@ $.fn.zoomgallery = function(options) {
 						prev();
 					}
 				});
-		}
-		
-		if (opts.navbar) {
 		}
 		
 		zoomId++
@@ -195,12 +224,13 @@ $.fn.zoomgallery = function(options) {
 			&& opts.mobileZoom.width
 			&& (
 				windowHeight < opts.mobileZoom.height
-				|| windowHeight < opts.mobileZoom.width
+				|| windowWidth < opts.mobileZoom.width
 		)) {
 			if (wRate > 1 || hRate > 1) {
 				win.mobileZoom = true;
 				win.dragging = false;
-				$(win).addClass('mobilezoom');
+				$(win).addClass(opts.mobileZoomClassName);
+				$(win).css3('transition-duration', '0s');
 				if (wRate > hRate) {
 					var width = ($(win).find('img').get(0).naturalWidth + wMarge) / hRate;
 					var left = - (width - windowWidth) / 2;
@@ -211,7 +241,7 @@ $.fn.zoomgallery = function(options) {
 						top: 0
 					});
 				} else {
-					$(win).addClass('mobilezoom');
+					$(win).addClass(opts.mobileZoomClassName);
 					var height = ($(win).find('img').get(0).naturalHeight) / wRate - hMarge;
 					var top = - (height - windowHeight) / 2;
 					$(win).find('img').css({
@@ -223,7 +253,8 @@ $.fn.zoomgallery = function(options) {
 				}
 			} else {
 				win.mobileZoom = false;
-				$(win).removeClass('mobilezoom');
+				$(win).removeClass(opts.mobileZoomClassName);
+				$(win).css3('transition-duration', opts.animationDuration + 's');
 				
 				$(win).find('img').css({
 					height: '100%',
@@ -241,7 +272,8 @@ $.fn.zoomgallery = function(options) {
 			}
 		} else {
 			win.mobileZoom = false;
-			$(win).removeClass('mobilezoom');
+			$(win).removeClass(opts.mobileZoomClassName);
+			$(win).css3('transition-duration', opts.animationDuration + 's');
 			
 			$(win).find('img').css({
 				height: '100%',
@@ -335,7 +367,6 @@ $.fn.zoomgallery = function(options) {
 		});
 		win.show();
 		elm.css('visibility', 'hidden');
-		win.css3('transition-duration', opts.animationDuration + 's');
 		win.removeClass('reset');
 		resizeWindow(win);
 		setTimeout(function() {
@@ -368,10 +399,17 @@ $.fn.zoomgallery = function(options) {
 		
 		win.addClass('reset');
 		win.removeClass('expended');
+		
+		if ($(win).hasClass(opts.mobileZoomClassName)) {
+			var duration = 0;
+		} else {
+			var duration = opts.animationDuration;
+		}
+		
 		setTimeout(function() {
 			elm.css('visibility', 'visible');
 			win.hide();
-		}, opts.animationDuration * 1000)
+		}, duration * 1000)
 	}
 	
 	var next = function() {

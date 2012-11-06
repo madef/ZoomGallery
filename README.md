@@ -41,14 +41,25 @@ ZoomGaller allow these next options
  - galleryMod (boolean(true)): Enable gallery mod
  - infinite (boolean(true)): Images can be scrolled to infinity
  - windowClassName (string('zoomWindow')): Class used for the window
+ - limiterClassName (string('limiter')): Class used for the blue shadow when dragging image in mobile mod
+ - navbarClassName (string('navbar')): Class used for the navbar
+ - titlebarClassName (string('titlebar')): Class used for the title bar
+ - previousButtonClassName (string('prev')): Class used for previous button in the navbar
+ - nextButtonClassName (string('next')): Class used for next button in the navbar
+ - mobileZoomClassName (string('mobilezoom')): Class add to window when navbar is activated
  - animationDuration (float(0.6)): Animation duration in second
  - swipeEvent (boolean(true)): Allow swipe event to run gallery. This feature require hammer.js (http://eightmedia.github.com/hammer.js/).
  - mobileZoom (array({height: 800, width: 600}): Allow a specific zoom for small device. To disable this feature, set  this attribute to boolean(false).
+ 
+Customization
+------------
+ZoomGallery is fully customizable by editng the CSS zoomgallery.css
+
 
 Version
 -
 
-0.4
+0.5
 
 
 License
