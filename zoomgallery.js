@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 /*
- * @version 0.5
+ * @version 0.6
  */
 
 $.fn.zoomgallery = function(options) {
@@ -79,6 +79,9 @@ $.fn.zoomgallery = function(options) {
 				$('<div class="' + opts.limiterClassName + '"></div>')
 					.css3('user-select', 'none')
 					.css3('user-drag', 'none')
+					.click(function() {
+						$(this).parent().find('img').click();
+					})
 			);
 		
 		if (opts.navbar) {
@@ -108,6 +111,9 @@ $.fn.zoomgallery = function(options) {
 		if (opts.swipeEvent && opts.galleryMod) {
 			win.find('img').css3('user-select', 'none');
 			win.find('img').css3('user-drag', 'none');
+			win.find('img').on('dragstart', function() {
+				return false;
+			});
 			win
 				.hammer({
 				})
@@ -147,7 +153,7 @@ $.fn.zoomgallery = function(options) {
 									prev();
 								}
 								$(this).find('.' + opts.limiterClassName).css({
-									boxShadow: (left / 6) + 'px 0 57px ' + $(this).find('.' + opts.limiterClassName).css('border-color'),
+									boxShadow: (left / 6) + 'px 0 57px ' + $(this).find('.' + opts.limiterClassName).css('border-left-color'),
 									left: 'auto',
 									right: '100%'
 								});
@@ -160,7 +166,7 @@ $.fn.zoomgallery = function(options) {
 									next();
 								}
 								$(this).find('.' + opts.limiterClassName).css({
-									boxShadow: (left + $(this).find('img').width() - $(this).width()) / 6 + 'px 0 57px ' + $(this).find('.' + opts.limiterClassName).css('border-color'),
+									boxShadow: (left + $(this).find('img').width() - $(this).width()) / 6 + 'px 0 57px ' + $(this).find('.' + opts.limiterClassName).css('border-left-color'),
 									left: '100%',
 									right: 'auto'
 								});
@@ -179,7 +185,7 @@ $.fn.zoomgallery = function(options) {
  				.on('dragend', function(ev) {
 					var it = this;
 					$(this).find('.' + opts.limiterClassName).css({
-						boxShadow: '0 0 0 ' + $(this).find('.' + opts.limiterClassName).css('border-color'),
+						boxShadow: '0 0 0 ' + $(this).find('.' + opts.limiterClassName).css('border-left-color'),
 						left: '100%'
 					});
 					setTimeout(function() {
@@ -209,14 +215,19 @@ $.fn.zoomgallery = function(options) {
 			return;
 		}
 		
-		var windowHeight = Math.min($(window).height(), document.body.clientHeight);
-		var windowWidth =Math.min($(window).width(), document.body.clientWidth);
+		if ($.browser.msie) {
+			var windowHeight = $(window).height();
+			var windowWidth = $(window).width();
+		} else {
+			var windowHeight = Math.min($(window).height(), document.body.clientHeight);
+			var windowWidth =Math.min($(window).width(), document.body.clientWidth);
+		}
 		
 		var wMarge = $(win).outerWidth(true) - $(win).outerWidth();
 		var hMarge = $(win).outerHeight(true) - $(win).outerHeight();
 		
-		var wRate = ($(win).find('img').get(0).naturalWidth + wMarge) / windowWidth;
-		var hRate = ($(win).find('img').get(0).naturalHeight + hMarge) / windowHeight;
+		var wRate = ($(win).find('img').naturalWidth() + wMarge) / windowWidth;
+		var hRate = ($(win).find('img').naturalHeight() + hMarge) / windowHeight;
 		
 		// The devise is a mobile (or have a small resolution)? Use specific zoom
 		if (opts.mobileZoom !== false
@@ -232,7 +243,7 @@ $.fn.zoomgallery = function(options) {
 				$(win).addClass(opts.mobileZoomClassName);
 				$(win).css3('transition-duration', '0s');
 				if (wRate > hRate) {
-					var width = ($(win).find('img').get(0).naturalWidth + wMarge) / hRate;
+					var width = ($(win).find('img').naturalWidth() + wMarge) / hRate;
 					var left = - (width - windowWidth) / 2;
 					$(win).find('img').css({
 						height: windowHeight + 'px',
@@ -242,7 +253,7 @@ $.fn.zoomgallery = function(options) {
 					});
 				} else {
 					$(win).addClass(opts.mobileZoomClassName);
-					var height = ($(win).find('img').get(0).naturalHeight) / wRate - hMarge;
+					var height = ($(win).find('img').naturalHeight()) / wRate - hMarge;
 					var top = - (height - windowHeight) / 2;
 					$(win).find('img').css({
 						height: height + 'px',
@@ -264,10 +275,10 @@ $.fn.zoomgallery = function(options) {
 				});
 			
 				$(win).css({
-					height: $(win).find('img').get(0).naturalHeight + 'px',
-					width: $(win).find('img').get(0).naturalWidth + 'px',
-					top: (windowHeight - $(win).find('img').get(0).naturalHeight) / 2 + $(document).scrollTop() + 'px',
-					left: (windowWidth - $(win).find('img').get(0).naturalWidth) / 2 + $(document).scrollLeft() + 'px'
+					height: $(win).find('img').naturalHeight() + 'px',
+					width: $(win).find('img').naturalWidth() + 'px',
+					top: (windowHeight - $(win).find('img').naturalHeight()) / 2 + $(document).scrollTop() + 'px',
+					left: (windowWidth - $(win).find('img').naturalWidth()) / 2 + $(document).scrollLeft() + 'px'
 				});
 			}
 		} else {
@@ -287,24 +298,24 @@ $.fn.zoomgallery = function(options) {
 				if (wRate > hRate) {
 					$(win).css({
 						width: windowWidth - wMarge + 'px',
-						height: ($(win).find('img').get(0).naturalHeight + hMarge) / wRate - hMarge + 'px',
-						top: (windowHeight - $(win).find('img').get(0).naturalHeight / wRate) / 2 - hMarge / 2 + $(document).scrollTop() + 'px',
+						height: ($(win).find('img').naturalHeight() + hMarge) / wRate - hMarge + 'px',
+						top: (windowHeight - $(win).find('img').naturalHeight() / wRate) / 2 - hMarge / 2 + $(document).scrollTop() + 'px',
 						left: $(document).scrollLeft()
 					});
 				} else {
 					$(win).css({
 						height: windowHeight - hMarge + 'px',
-						width: ($(win).find('img').get(0).naturalWidth + wMarge) / hRate - wMarge + 'px',
-						left: (windowWidth - $(win).find('img').get(0).naturalWidth / hRate) / 2 - wMarge / 2 + $(document).scrollLeft() + 'px',
+						width: ($(win).find('img').naturalWidth() + wMarge) / hRate - wMarge + 'px',
+						left: (windowWidth - $(win).find('img').naturalWidth() / hRate) / 2 - wMarge / 2 + $(document).scrollLeft() + 'px',
 						top: $(document).scrollTop()
 					});
 				}
 			} else {
 				$(win).css({
-					height: $(win).find('img').get(0).naturalHeight + 'px',
-					width: $(win).find('img').get(0).naturalWidth + 'px',
-					top: (windowHeight - $(win).find('img').get(0).naturalHeight) / 2 + $(document).scrollTop() + 'px',
-					left: (windowWidth - $(win).find('img').get(0).naturalWidth) / 2 + $(document).scrollLeft() + 'px'
+					height: $(win).find('img').naturalHeight() + 'px',
+					width: $(win).find('img').naturalWidth() + 'px',
+					top: (windowHeight - $(win).find('img').naturalHeight()) / 2 + $(document).scrollTop() + 'px',
+					left: (windowWidth - $(win).find('img').naturalWidth()) / 2 + $(document).scrollLeft() + 'px'
 				});
 			}
 		}
@@ -445,10 +456,36 @@ $.fn.zoomgallery = function(options) {
 	});
 	return this;
 };
+
 $.fn.css3 = function(attr, value) {
 	var it = this;
-	$.each(['', '-moz-', '-webkit-', '-o-', '-ie-'], function(i, prefix) {
+	$.each(['', '-moz-', '-webkit-', '-o-', '-ms-'], function(i, prefix) {
 		it.css(prefix + attr, value);
 	});
 	return this;
+}
+
+var props = ['Width', 'Height'];
+var prop;
+
+while (prop = props.pop()) {
+	(function (natural, prop) {
+		$.fn[natural] = (natural in new Image()) ? 
+		function () {
+		return this[0][natural];
+		} : 
+		function () {
+		var 
+		node = this[0],
+		img,
+		value;
+
+		if (node.tagName.toLowerCase() === 'img') {
+			img = new Image();
+			img.src = node.src,
+			value = img[prop];
+		}
+		return value;
+		};
+	}('natural' + prop, prop.toLowerCase()));
 }

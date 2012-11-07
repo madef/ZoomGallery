@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 /*
- * @version 0.5
+ * @version 0.6
  */
 
 .zoomgallery {
@@ -26,12 +26,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	border-radius: 5px;
 	margin: 5px;
 	cursor: url(./zoomin.cur), default;
+	border: none;
 }
 .zoomgallery.loading {
 	opacity: 0.6;
 }
 .zoomgallery  img {
 	border-radius: 5px;
+	border: none;
 }
 .zoomWindow {
 	margin: 10px;

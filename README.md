@@ -1,11 +1,13 @@
 ZoomGallery Documentation
 =========
 ZoomGallery is a small and easy to use JS library to make responsive images galleries.
+
 The demo is available here: http://zoomgallery.deflotte.fr/
 
 Requirement
 ------------
 ZoomGallery require jQuery 1.8.2
+
 To eneable swipe event, hammer.js 0.6.2 is required
 
 Get Started
@@ -56,10 +58,17 @@ Customization
 ZoomGallery is fully customizable by editng the CSS zoomgallery.css
 
 
+Compatibility
+------------
+ZoomGallery is fully compatible with Firefox (16 and more), Chome (18 and more), Chrome for Android, and Firefox for Android. I do not try on Opera and Safari, but there is no reason that ZoomGallery does not work with them.
+
+With IE 8 and less the css3 transitions will not work. Transparency and rounded border will not work with IE under version 9 (not include).
+
+
 Version
 -
 
-0.5
+0.6
 
 
 License
