@@ -68,7 +68,7 @@ With IE 8 and less the css3 transitions will not work. Transparency and rounded 
 Version
 -
 
-0.6
+0.7
 
 
 License
