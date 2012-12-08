@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * @version 0.6
  */
 
-$.fn.zoomgallery = function(options) {
+jQuery.fn.zoomgallery = function(options) {
 	// Defaults vars
 	var defaults = {
 		navbar: true,
@@ -39,20 +39,20 @@ $.fn.zoomgallery = function(options) {
 		mobileZoom: {height: 500, width: 500}
 	};
 	// Extend our default options with those provided.
-	var opts = $.extend(defaults, options);
+	var opts = jQuery.extend(defaults, options);
 	
 	var currentImg = 0; // Img curently view for gallery mode
-	var gallery = $(this);
+	var gallery = jQuery(this);
 	
 	var zoomId = 0;
 	// Add windows
-	$(this).each(function() {
+	jQuery(this).each(function() {
 		// Set a zoomId
-		$(this).attr('zoomId', zoomId);
-		var img = $(this);
+		jQuery(this).attr('zoomId', zoomId);
+		var img = jQuery(this);
 		
 		
-		var win = $('<div></div>')
+		var win = jQuery('<div></div>')
 			.addClass(opts.windowClassName)
 			.css({
 				display: 'none',
@@ -64,11 +64,11 @@ $.fn.zoomgallery = function(options) {
 				height: 0
 			})
 			.attr('id', opts.windowClassName + zoomId)
-			.append($('<img />')
+			.append(jQuery('<img />')
 				.css('width', '100%')
 				.css('height', '100%')
 				.click(function() {
-					if ($(this).parent().get(0).dragging) {
+					if (jQuery(this).parent().get(0).dragging) {
 						return false;
 					}
 					hideWindow(img);
@@ -76,23 +76,23 @@ $.fn.zoomgallery = function(options) {
 				})
 			)
 			.append(
-				$('<div class="' + opts.limiterClassName + '"></div>')
+				jQuery('<div class="' + opts.limiterClassName + '"></div>')
 					.css3('user-select', 'none')
 					.css3('user-drag', 'none')
 					.click(function() {
-						$(this).parent().find('img').click();
+						jQuery(this).parent().find('img').click();
 					})
 			);
 		
 		if (opts.navbar) {
 			win.append(
-				$('<div class="' + opts.navbarClassName + '"></div>')
+				jQuery('<div class="' + opts.navbarClassName + '"></div>')
 					.append(
-						$('<div class="' + opts.previousButtonClassName + '"></div>')
+						jQuery('<div class="' + opts.previousButtonClassName + '"></div>')
 							.click(function() { prev(); })
 					 )
 					.append(
-						$('<div class="' + opts.nextButtonClassName + '"></div>')
+						jQuery('<div class="' + opts.nextButtonClassName + '"></div>')
 							.click(function() { next(); })
 					 )
 					
@@ -100,12 +100,12 @@ $.fn.zoomgallery = function(options) {
 		}
 		if (opts.titlebar) {
 			win.append(
-				$('<div class="' + opts.titlebarClassName + '"></div>')
+				jQuery('<div class="' + opts.titlebarClassName + '"></div>')
 					.html(img.find('img').attr('title'))
 			);
 		}
 		
-		$('body').append(win);
+		jQuery('body').append(win);
 		
 		// Adding swipe event
 		if (opts.swipeEvent && opts.galleryMod) {
@@ -142,40 +142,40 @@ $.fn.zoomgallery = function(options) {
 						var left = position.left + ev.distanceX;
 						if (top > 0) {
 							top = 0;
-						} else if (top < - $(this).find('img').height() + $(this).height()) {
-							top = - $(this).find('img').height() + $(this).height();
+						} else if (top < - jQuery(this).find('img').height() + jQuery(this).height()) {
+							top = - jQuery(this).find('img').height() + jQuery(this).height();
 						}
 						
 						if (left > 0) {
 							if (opts.galleryMod) {
-								if ((left) /  $(this).find('img').width() > 0.2) {
+								if ((left) /  jQuery(this).find('img').width() > 0.2) {
 									this.dragStarted = true;
 									prev();
 								}
-								$(this).find('.' + opts.limiterClassName).css({
-									boxShadow: (left / 6) + 'px 0 57px ' + $(this).find('.' + opts.limiterClassName).css('border-left-color'),
+								jQuery(this).find('.' + opts.limiterClassName).css({
+									boxShadow: (left / 6) + 'px 0 57px ' + jQuery(this).find('.' + opts.limiterClassName).css('border-left-color'),
 									left: 'auto',
 									right: '100%'
 								});
 							}
 							left = 0;
-						} else if (left < - $(this).find('img').width() + $(this).width()) {
+						} else if (left < - jQuery(this).find('img').width() + jQuery(this).width()) {
 							if (opts.galleryMod) {
-								if ((left + $(this).find('img').width() - $(this).width()) /  $(this).find('img').width() < -0.2) {
+								if ((left + jQuery(this).find('img').width() - jQuery(this).width()) /  jQuery(this).find('img').width() < -0.2) {
 									this.dragStarted = true;
 									next();
 								}
-								$(this).find('.' + opts.limiterClassName).css({
-									boxShadow: (left + $(this).find('img').width() - $(this).width()) / 6 + 'px 0 57px ' + $(this).find('.' + opts.limiterClassName).css('border-left-color'),
+								jQuery(this).find('.' + opts.limiterClassName).css({
+									boxShadow: (left + jQuery(this).find('img').width() - jQuery(this).width()) / 6 + 'px 0 57px ' + jQuery(this).find('.' + opts.limiterClassName).css('border-left-color'),
 									left: '100%',
 									right: 'auto'
 								});
-								left = $(this).find('img').width() - $(this).width() + (left + $(this).find('img').width() - $(this).width()) / 6;
+								left = jQuery(this).find('img').width() - jQuery(this).width() + (left + jQuery(this).find('img').width() - jQuery(this).width()) / 6;
 							}
-							left = - $(this).find('img').width() + $(this).width();
+							left = - jQuery(this).find('img').width() + jQuery(this).width();
 						}
 						
-						$(this).find('img').css({
+						jQuery(this).find('img').css({
 							top: top,
 							left: left
 						});
@@ -184,8 +184,8 @@ $.fn.zoomgallery = function(options) {
 				})
  				.on('dragend', function(ev) {
 					var it = this;
-					$(this).find('.' + opts.limiterClassName).css({
-						boxShadow: '0 0 0 ' + $(this).find('.' + opts.limiterClassName).css('border-left-color'),
+					jQuery(this).find('.' + opts.limiterClassName).css({
+						boxShadow: '0 0 0 ' + jQuery(this).find('.' + opts.limiterClassName).css('border-left-color'),
 						left: '100%'
 					});
 					setTimeout(function() {
@@ -210,24 +210,19 @@ $.fn.zoomgallery = function(options) {
 	});
 	
 	var resizeWindow = function(win) {
-		var win = $(win).get(0);
-		if (!$(win).is(':visible')) {
+		var win = jQuery(win).get(0);
+		if (!jQuery(win).is(':visible')) {
 			return;
 		}
 		
-		if ($.browser.msie) {
-			var windowHeight = $(window).height();
-			var windowWidth = $(window).width();
-		} else {
-			var windowHeight = Math.min($(window).height(), document.body.clientHeight);
-			var windowWidth =Math.min($(window).width(), document.body.clientWidth);
-		}
+		var windowHeight = jQuery(window).height();
+		var windowWidth = jQuery(window).width();
 		
-		var wMarge = $(win).outerWidth(true) - $(win).outerWidth();
-		var hMarge = $(win).outerHeight(true) - $(win).outerHeight();
+		var wMarge = jQuery(win).outerWidth(true) - jQuery(win).outerWidth();
+		var hMarge = jQuery(win).outerHeight(true) - jQuery(win).outerHeight();
 		
-		var wRate = ($(win).find('img').naturalWidth() + wMarge) / windowWidth;
-		var hRate = ($(win).find('img').naturalHeight() + hMarge) / windowHeight;
+		var wRate = (jQuery(win).find('img').naturalWidth() + wMarge) / windowWidth;
+		var hRate = (jQuery(win).find('img').naturalHeight() + hMarge) / windowHeight;
 		
 		// The devise is a mobile (or have a small resolution)? Use specific zoom
 		if (opts.mobileZoom !== false
@@ -240,22 +235,22 @@ $.fn.zoomgallery = function(options) {
 			if (wRate > 1 || hRate > 1) {
 				win.mobileZoom = true;
 				win.dragging = false;
-				$(win).addClass(opts.mobileZoomClassName);
-				$(win).css3('transition-duration', '0s');
+				jQuery(win).addClass(opts.mobileZoomClassName);
+				jQuery(win).css3('transition-duration', '0s');
 				if (wRate > hRate) {
-					var width = ($(win).find('img').naturalWidth() + wMarge) / hRate;
+					var width = (jQuery(win).find('img').naturalWidth() + wMarge) / hRate;
 					var left = - (width - windowWidth) / 2;
-					$(win).find('img').css({
+					jQuery(win).find('img').css({
 						height: windowHeight + 'px',
 						width: width + 'px',
 						left: left,
 						top: 0
 					});
 				} else {
-					$(win).addClass(opts.mobileZoomClassName);
-					var height = ($(win).find('img').naturalHeight()) / wRate - hMarge;
+					jQuery(win).addClass(opts.mobileZoomClassName);
+					var height = (jQuery(win).find('img').naturalHeight()) / wRate - hMarge;
 					var top = - (height - windowHeight) / 2;
-					$(win).find('img').css({
+					jQuery(win).find('img').css({
 						height: height + 'px',
 						width: windowWidth + 'px',
 						left: 0,
@@ -264,29 +259,29 @@ $.fn.zoomgallery = function(options) {
 				}
 			} else {
 				win.mobileZoom = false;
-				$(win).removeClass(opts.mobileZoomClassName);
-				$(win).css3('transition-duration', opts.animationDuration + 's');
+				jQuery(win).removeClass(opts.mobileZoomClassName);
+				jQuery(win).css3('transition-duration', opts.animationDuration + 's');
 				
-				$(win).find('img').css({
+				jQuery(win).find('img').css({
 					height: '100%',
 					width: '100%',
 					top: '0',
 					left: '0'
 				});
 			
-				$(win).css({
-					height: $(win).find('img').naturalHeight() + 'px',
-					width: $(win).find('img').naturalWidth() + 'px',
-					top: (windowHeight - $(win).find('img').naturalHeight()) / 2 + $(document).scrollTop() + 'px',
-					left: (windowWidth - $(win).find('img').naturalWidth()) / 2 + $(document).scrollLeft() + 'px'
+				jQuery(win).css({
+					height: jQuery(win).find('img').naturalHeight() + 'px',
+					width: jQuery(win).find('img').naturalWidth() + 'px',
+					top: (windowHeight - jQuery(win).find('img').naturalHeight()) / 2 + jQuery(document).scrollTop() + 'px',
+					left: (windowWidth - jQuery(win).find('img').naturalWidth()) / 2 + jQuery(document).scrollLeft() + 'px'
 				});
 			}
 		} else {
 			win.mobileZoom = false;
-			$(win).removeClass(opts.mobileZoomClassName);
-			$(win).css3('transition-duration', opts.animationDuration + 's');
+			jQuery(win).removeClass(opts.mobileZoomClassName);
+			jQuery(win).css3('transition-duration', opts.animationDuration + 's');
 			
-			$(win).find('img').css({
+			jQuery(win).find('img').css({
 				height: '100%',
 				width: '100%',
 				top: '0',
@@ -296,26 +291,26 @@ $.fn.zoomgallery = function(options) {
 			win.mobileZoom = false;
 			if (wRate > 1 || hRate > 1) {
 				if (wRate > hRate) {
-					$(win).css({
+					jQuery(win).css({
 						width: windowWidth - wMarge + 'px',
-						height: ($(win).find('img').naturalHeight() + hMarge) / wRate - hMarge + 'px',
-						top: (windowHeight - $(win).find('img').naturalHeight() / wRate) / 2 - hMarge / 2 + $(document).scrollTop() + 'px',
-						left: $(document).scrollLeft()
+						height: (jQuery(win).find('img').naturalHeight() + hMarge) / wRate - hMarge + 'px',
+						top: (windowHeight - jQuery(win).find('img').naturalHeight() / wRate) / 2 - hMarge / 2 + jQuery(document).scrollTop() + 'px',
+						left: jQuery(document).scrollLeft()
 					});
 				} else {
-					$(win).css({
+					jQuery(win).css({
 						height: windowHeight - hMarge + 'px',
-						width: ($(win).find('img').naturalWidth() + wMarge) / hRate - wMarge + 'px',
-						left: (windowWidth - $(win).find('img').naturalWidth() / hRate) / 2 - wMarge / 2 + $(document).scrollLeft() + 'px',
-						top: $(document).scrollTop()
+						width: (jQuery(win).find('img').naturalWidth() + wMarge) / hRate - wMarge + 'px',
+						left: (windowWidth - jQuery(win).find('img').naturalWidth() / hRate) / 2 - wMarge / 2 + jQuery(document).scrollLeft() + 'px',
+						top: jQuery(document).scrollTop()
 					});
 				}
 			} else {
-				$(win).css({
-					height: $(win).find('img').naturalHeight() + 'px',
-					width: $(win).find('img').naturalWidth() + 'px',
-					top: (windowHeight - $(win).find('img').naturalHeight()) / 2 + $(document).scrollTop() + 'px',
-					left: (windowWidth - $(win).find('img').naturalWidth()) / 2 + $(document).scrollLeft() + 'px'
+				jQuery(win).css({
+					height: jQuery(win).find('img').naturalHeight() + 'px',
+					width: jQuery(win).find('img').naturalWidth() + 'px',
+					top: (windowHeight - jQuery(win).find('img').naturalHeight()) / 2 + jQuery(document).scrollTop() + 'px',
+					left: (windowWidth - jQuery(win).find('img').naturalWidth()) / 2 + jQuery(document).scrollLeft() + 'px'
 				});
 			}
 		}
@@ -324,9 +319,9 @@ $.fn.zoomgallery = function(options) {
 	var load = function(elm, callback) {
 		var id = elm.attr('zoomId');
 		elm.addClass('loading');
-		$('#' + opts.windowClassName + id + ' img').attr('src', elm.attr('href'));
-		$('#' + opts.windowClassName + id + ' img').load(function() {
-				var win = $(this).parent();
+		jQuery('#' + opts.windowClassName + id + ' img').attr('src', elm.attr('href'));
+		jQuery('#' + opts.windowClassName + id + ' img').load(function() {
+				var win = jQuery(this).parent();
 				elm.removeClass('loading');
 				resizeWindow(win);
 				
@@ -334,34 +329,34 @@ $.fn.zoomgallery = function(options) {
 					callback(elm);
 				}
 				
-				var it = $(this).parent();
-				$(window).resize(function() {
+				var it = jQuery(this).parent();
+				jQuery(window).resize(function() {
 					resizeWindow(win);
 				});
 		});
 	}
 	
 	var displayWindow = function(elm) {
-		if (!$('#' + opts.windowClassName + elm.attr('zoomId') + ' img').attr('src')) {
+		if (!jQuery('#' + opts.windowClassName + elm.attr('zoomId') + ' img').attr('src')) {
 			load(elm, displayWindow);
 			return;
 		}
 		
 		if (currentImg != elm.attr('zoomId')) {
-			hideWindow($(gallery[currentImg]));
+			hideWindow(jQuery(gallery[currentImg]));
 		}
-		var win = $('#' + opts.windowClassName + elm.attr('zoomId'));
-		var wMarge = $(win).outerWidth(true) - $(win).outerWidth();
-		var hMarge = $(win).outerHeight(true) - $(win).outerHeight();
+		var win = jQuery('#' + opts.windowClassName + elm.attr('zoomId'));
+		var wMarge = jQuery(win).outerWidth(true) - jQuery(win).outerWidth();
+		var hMarge = jQuery(win).outerHeight(true) - jQuery(win).outerHeight();
 		
-		var minWMarge = $(elm).outerWidth(true) - $(elm).outerWidth();
-		var minHMarge = $(elm).outerHeight(true) - $(elm).outerHeight();
+		var minWMarge = jQuery(elm).outerWidth(true) - jQuery(elm).outerWidth();
+		var minHMarge = jQuery(elm).outerHeight(true) - jQuery(elm).outerHeight();
 		
-		var bodyWMarge = $('body').outerWidth(true) - $('body').outerWidth();
-		var bodyHMarge = $('body').outerHeight(true) - $('body').outerHeight();
+		var bodyWMarge = jQuery('body').outerWidth(true) - jQuery('body').outerWidth();
+		var bodyHMarge = jQuery('body').outerHeight(true) - jQuery('body').outerHeight();
 		currentImg = elm.attr('zoomId');
 		
-		if ($('body').css('position') != 'static') {
+		if (jQuery('body').css('position') != 'static') {
 			bodyWMarge = 0;
 			bodyHMarge = 0;
 		}
@@ -370,8 +365,8 @@ $.fn.zoomgallery = function(options) {
 		win.removeClass('expended');
 		win.addClass('reset');
 		win.css({
-			left: elm.offset().left - wMarge / 2 - $('body').offset().left + bodyWMarge / 2,
-			top: elm.offset().top - hMarge / 2 - $('body').offset().top + bodyHMarge / 2,
+			left: elm.offset().left - wMarge / 2 - jQuery('body').offset().left + bodyWMarge / 2,
+			top: elm.offset().top - hMarge / 2 - jQuery('body').offset().top + bodyHMarge / 2,
 			width: elm.width(),
 			height: elm.height(),
 			zIndex: 1
@@ -386,23 +381,23 @@ $.fn.zoomgallery = function(options) {
 	}
 	
 	var hideWindow = function(elm) {
-		var win = $('#' + opts.windowClassName + elm.attr('zoomId'));
-		var wMarge = $(win).outerWidth(true) - $(win).outerWidth();
-		var hMarge = $(win).outerHeight(true) - $(win).outerHeight();
+		var win = jQuery('#' + opts.windowClassName + elm.attr('zoomId'));
+		var wMarge = jQuery(win).outerWidth(true) - jQuery(win).outerWidth();
+		var hMarge = jQuery(win).outerHeight(true) - jQuery(win).outerHeight();
 		
-		var minWMarge = $(elm).outerWidth(true) - $(elm).outerWidth();
-		var minHMarge = $(elm).outerHeight(true) - $(elm).outerHeight();
+		var minWMarge = jQuery(elm).outerWidth(true) - jQuery(elm).outerWidth();
+		var minHMarge = jQuery(elm).outerHeight(true) - jQuery(elm).outerHeight();
 		
-		var bodyWMarge = $('body').outerWidth(true) - $('body').outerWidth();
-		var bodyHMarge = $('body').outerHeight(true) - $('body').outerHeight();
+		var bodyWMarge = jQuery('body').outerWidth(true) - jQuery('body').outerWidth();
+		var bodyHMarge = jQuery('body').outerHeight(true) - jQuery('body').outerHeight();
 		
-		if ($('body').css('position') != 'static') {
+		if (jQuery('body').css('position') != 'static') {
 			bodyWMarge = 0;
 			bodyHMarge = 0;
 		}
 		win.css({
-			left: elm.offset().left - wMarge / 2 - $('body').offset().left + bodyWMarge / 2,
-			top: elm.offset().top - hMarge / 2 - $('body').offset().top + bodyHMarge / 2,
+			left: elm.offset().left - wMarge / 2 - jQuery('body').offset().left + bodyWMarge / 2,
+			top: elm.offset().top - hMarge / 2 - jQuery('body').offset().top + bodyHMarge / 2,
 			width: elm.width(),
 			height: elm.height(),
 			zIndex: 0
@@ -411,7 +406,7 @@ $.fn.zoomgallery = function(options) {
 		win.addClass('reset');
 		win.removeClass('expended');
 		
-		if ($(win).hasClass(opts.mobileZoomClassName)) {
+		if (jQuery(win).hasClass(opts.mobileZoomClassName)) {
 			var duration = 0;
 		} else {
 			var duration = opts.animationDuration;
@@ -434,7 +429,7 @@ $.fn.zoomgallery = function(options) {
 			}
 			newImg = 0;
 		}
-		displayWindow($(gallery[newImg]));
+		displayWindow(jQuery(gallery[newImg]));
 	}
 	var prev = function() {
 		if (!opts.galleryMod) {
@@ -447,19 +442,19 @@ $.fn.zoomgallery = function(options) {
 			}
 			newImg = gallery.length - 1;
 		}
-		displayWindow($(gallery[newImg]));
+		displayWindow(jQuery(gallery[newImg]));
 	}
 	
-	$(this).click(function() {
-		displayWindow($(this));
+	jQuery(this).click(function() {
+		displayWindow(jQuery(this));
 		return false;
 	});
 	return this;
 };
 
-$.fn.css3 = function(attr, value) {
+jQuery.fn.css3 = function(attr, value) {
 	var it = this;
-	$.each(['', '-moz-', '-webkit-', '-o-', '-ms-'], function(i, prefix) {
+	jQuery.each(['', '-moz-', '-webkit-', '-o-', '-ms-'], function(i, prefix) {
 		it.css(prefix + attr, value);
 	});
 	return this;
@@ -470,7 +465,7 @@ var prop;
 
 while (prop = props.pop()) {
 	(function (natural, prop) {
-		$.fn[natural] = (natural in new Image()) ? 
+		jQuery.fn[natural] = (natural in new Image()) ? 
 		function () {
 		return this[0][natural];
 		} : 
